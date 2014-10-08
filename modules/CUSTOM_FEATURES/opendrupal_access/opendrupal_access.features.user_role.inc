@@ -16,5 +16,29 @@ function opendrupal_access_user_default_roles() {
     'weight' => 2,
   );
 
+  // Exported role: editor.
+  $roles['editor'] = array(
+    'name' => 'editor',
+    'weight' => 4,
+  );
+
+  // Exported role: moderator.
+  $roles['moderator'] = array(
+    'name' => 'moderator',
+    'weight' => 3,
+  );
+
+  // Exported role: persona.
+  $roles['persona'] = array(
+    'name' => 'persona',
+    'weight' => 6,
+  );
+
+  // Exported role: subscriber.
+  $roles['subscriber'] = array(
+    'name' => 'subscriber',
+    'weight' => 5,
+  );
+
   return $roles;
 }

@@ -229,7 +229,7 @@ function odinstall_api_add_persona_accounts(&$new_accounts, $is_blocked = TRUE) 
   $sample_usernames = array(
     "anna", "bob", "carole", "daniel",
     "eve", "frank", "georgia", "harry",
-    "ida", "joseph", "kate", "larry",
+    "ida", "joseph", "kate", "len",
   );
 
   // Depending on role, assign to create-user array, or persona role, or drop.
@@ -246,11 +246,6 @@ function odinstall_api_add_persona_accounts(&$new_accounts, $is_blocked = TRUE) 
         $roles[$rid] = $role_name;
     }
   }
-
-  // Do any roles demand multiple users say for one to invite another?
-  $users_per_role = array(
-    "scientist" => 2,
-  );
 
   // For each array-to-create-user role, create users with persona role too.
   foreach ($roles as $rid => $role_name) {
