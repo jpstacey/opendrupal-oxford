@@ -286,6 +286,7 @@ function _odinstall_pages_revert_features() {
       foreach ($subresults as $status => $messages) {
         foreach ($messages as $component => $message) {
           if ($message == t("Current state already matches defaults, aborting.")) {
+            drupal_set_message("Feature $feature, component $component is fine");
             continue;
           }
           $features_touched++;
@@ -302,7 +303,7 @@ function _odinstall_pages_revert_features() {
       }
     }
   }
-  if (!$features_touched) {
+  if (!isset($features_touched) || !$features_touched) {
     drupal_set_message(t("No features needed to be reverted."), "ok");
   }
 }

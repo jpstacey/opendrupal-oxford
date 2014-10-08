@@ -81,3 +81,6 @@ dependencies[] = views
 dependencies[] = views_bulk_operations
 dependencies[] = views_content
 dependencies[] = views_ui
+
+; Custom features
+dependencies[] = opendrupal_access

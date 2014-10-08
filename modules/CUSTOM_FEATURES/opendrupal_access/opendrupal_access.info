@@ -1,0 +1,8 @@
+name = Open Drupal access
+description = Access privileges for the Open Drupal training site
+core = 7.x
+package = Open Drupal
+version = 7.x-1.0
+dependencies[] = features
+features[features_api][] = api:2
+features[user_role][] = administrator
