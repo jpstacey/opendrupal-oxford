@@ -1,0 +1,13 @@
+# @file
+# .gitignore to prevent checking in contrib code.
+
+# By default, ignore everything in modules/ and themes/
+modules/*
+themes/*
+libraries/*
+
+# Exceptions for anything in the custom/ subfolders.
+!modules/CUSTOM
+!themes/CUSTOM
+!modules/CUSTOM_FEATURES
+!libraries/CUSTOM

@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Custom Open Drupal install profile
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ * Consider using profile inheritance in the future e.g:
+ *  * www.phase2technology.com/blog
+ *     /inheriting-your-drupal-profile-from-an-existing-distribution/
+ *  * https://gist.github.com/waako/4431a06555d8d8bb486d
+ */
+function odprofile_install() {
+  // Copied verbatim from system.install:511.
+  variable_set("theme_default", "odtheme");
+  db_update('system')
+    ->fields(array('status' => 1))
+    ->condition('type', 'theme')
+    ->condition('name', 'odtheme')
+    ->execute();
+  // Then uninstall bartik.
+  db_update('system')
+    ->fields(array('status' => 0))
+    ->condition('type', 'theme')
+    ->condition('name', 'bartik')
+    ->execute();
+
+  // Enable the concept of an admin user role: should be created by features.
+  $admin_role = user_role_load_by_name("administrator");
+  if ($admin_role->rid) {
+    variable_set('user_admin_role', $admin_role->rid);
+    // Historically give admin role all permissions should've had thus far.
+    user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  }
+
+  // Run the minimal install profile.
+  include_once DRUPAL_ROOT . '/profiles/minimal/minimal.install';
+  minimal_install();
+
+  // Run post-install tasks: odinstall as soft (not .info) dependency.
+  module_enable(array("odinstall"));
+  module_load_include("api.inc", "odinstall");
+
+  // Create menu items (features export not very reliable for this.)
+  odinstall_api_create_menu_items();
+  // Create taxonomy terms.
+  odinstall_api_create_taxonomy_terms();
+  // Run "development-mode" tasks.
+  odinstall_api_devmode_set();
+
+  // Disable any menus we don't want, or move them around.
+  db_update('block')
+    ->condition('theme', 'odtheme')->condition('module', 'system')
+    ->condition('delta', array('navigation', 'management'), 'IN')
+    ->fields(array('status' => 0))
+    ->execute();
+  db_update('block')
+    ->condition('theme', 'odtheme')->condition('module', 'system')
+    ->condition('delta', 'help')
+    ->fields(array('region' => 'content'))
+    ->execute();
+}

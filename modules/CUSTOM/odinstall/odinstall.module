@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Post-install and install tasks.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function odinstall_help($path, $arg) {
+  // Don't run on the post-install admin pages.
+  $admin_pages = array(
+    "post-install-uid1" => "admin/config/system/post-install-uid1",
+    "post-install-admin" => "admin/config/system/post-install-admin",
+  );
+  if (in_array($_GET['q'], $admin_pages)) {
+    return;
+  }
+
+  // Give signals based on UID.
+  global $user;
+  // Admin should be told to do post-launch fixes.
+  if ($user->uid == 1) {
+    drupal_set_message(t(
+      'You should not be logged in as UID=1. Have you completed the <a href="@l">post-install tasks</a> yet?',
+      array("@l" => url($admin_pages["post-install-uid1"]))
+    ), "error");
+  }
+  // Anyone else should be told either:
+  elseif (user_access("administer site configuration")) {
+    // (a) to block the admin user...
+    $account = user_load(1);
+    if ($account->status) {
+      drupal_set_message(t(
+        'You should <a href="@l">complete the post-install tasks</a> to finalize this install.',
+        array("@l" => url($admin_pages["post-install-admin"]))
+      ), "error");
+    }
+    // (b) ... or to uninstall this module.
+  }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function odinstall_menu() {
+  $items['admin/config/system/post-install-uid1'] = array(
+    'title' => 'Post-install tasks for the superuser',
+    'description' => 'After an initial site build, certain tasks need to be completed by UID=1 before they are disabled.',
+
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('odinstall_pages_post_install_uid1'),
+
+    'access callback' => 'odinstall_administrator_not_superuser',
+    'access arguments' => array('administer site configuration'),
+
+    'file' => 'odinstall.pages.inc',
+  );
+
+  $items['admin/config/system/post-install-admin'] = array(
+    'title' => 'Post-install tasks for an administrator',
+    'description' => "After an initial site build, certain tasks need to be completed by an administrator, once they're created.",
+
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('odinstall_pages_post_install'),
+
+    'access callback' => 'odinstall_administrator_not_superuser',
+    'access arguments' => array('administer site configuration', FALSE),
+
+    'file' => 'odinstall.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Page access callback.
+ */
+function odinstall_administrator_not_superuser($perm, $expected_superuser_status = TRUE) {
+  global $user;
+  $is_superuser = ($user->uid == 1);
+  return user_access($perm) && ($is_superuser == $expected_superuser_status);
+}

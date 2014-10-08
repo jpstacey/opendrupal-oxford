@@ -1,0 +1,7 @@
+; @file
+; .info file for install tasks
+name = "Open Drupal install helper"
+description = "Install tasks for a new Open Drupal training site"
+core = "7.x"
+
+dependencies[] = taxonomy_xml
