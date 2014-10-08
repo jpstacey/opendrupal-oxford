@@ -156,7 +156,6 @@ function odinstall_api_revert_features($force = FALSE) {
  */
 function odinstall_api_create_taxonomy_terms() {
   odinstall_api_create_taxonomy_terms_from_csv();
-  odinstall_api_create_taxonomy_terms_from_feeds();
 }
 
 /**
